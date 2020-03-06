@@ -1,0 +1,18 @@
+var prefix = "<your prefix>";
+
+/* Set the path to read the weather files */
+var adls_path = "abfss://isdweatherdatacontainer@" + accountName + ".dfs.core.windows.net/" + prefix + "/ISDWeather/";
+
+/* Read the weather data into a dataframe */
+var weather = spark.Read().Parquet(adls_path);
+weather.Show();
+weather.PrintSchema();
+
+/* Curate the dataframe with the years that you need and drop some columns that you do not need */
+var weathercurated = weather.Drop("p_k").Drop("version").Filter(Col("Year") == "2017" | Col("Year") == "2018" | Col("Year") == "2019" );
+
+/* Set the path to the new location of the curated dataframe */
+var adls_pathsql = "abfss://isdweatherdatacontainer@" + accountName + ".dfs.core.windows.net/" + prefix + "/ISDWeathercurated/";
+
+/* Write the new files into a curated folder */
+weathercurated.Write().Mode("Overwrite").Parquet(adls_pathsql);

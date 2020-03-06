@@ -1,0 +1,19 @@
+var prefix = "<your prefix>";
+
+/* Set the path to read the Green Cab files */
+var adls_path = "abfss://nyctlc@" + accountName + ".dfs.core.windows.net/" + prefix + "/green/";
+
+/* Read the green cab into a dataframe */
+var greencab = spark.Read().Parquet(adls_path);
+greencab.Show();
+greencab.PrintSchema();
+
+/* Curate the dataframe with the years that you need and drop some columns that you do not need */
+var greencabcurated = greencab.Filter(Col("puYear") == "2017" | Col("puYear") == "2018" | Col("puYear") == "2019" );
+greencabcurated.PrintSchema();
+
+/* Set the path to the new location of the curated dataframe */
+var adls_pathsql = "abfss://nyctlc@" + accountName + ".dfs.core.windows.net/" + prefix + "/greencurated/";
+
+/* Write the new files into a curated folder */
+greencabcurated.Write().Mode("Overwrite").Parquet(adls_pathsql);

@@ -1,0 +1,1 @@
+year(tpepPickupDateTime)==2017 || year(tpepPickupDateTime)==2018 || year(tpepPickupDateTime)==2019

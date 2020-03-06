@@ -1,0 +1,23 @@
+var prefix = "<your prefix>";
+
+/* Set the path to read the holiday files */
+var adls_path = "abfss://holidaydatacontainer@" + accountName + ".dfs.core.windows.net/" + prefix + "/Processed/";
+
+/* Read the holiday data into a dataframe */
+var holiday = spark.Read().Parquet(adls_path);
+holiday.Show();
+holiday.PrintSchema();
+
+/* Change column type to a string from boolean */
+var holidaysql = holiday
+    .WithColumn("isPaidTimeOff", Col("isPaidTimeOff").Cast("string"))
+    .WithColumn("isPaidTimeOff", RegexpReplace(Col("isPaidTimeOff"),"false","0"))
+    .WithColumn("isPaidTimeOff", RegexpReplace(Col("isPaidTimeOff"),"true","1"))
+    .WithColumn("isPaidTimeOff", When(Col("isPaidTimeOff").IsNull(),0).Otherwise(Col("isPaidTimeOff")))
+    .WithColumn("isPaidTimeOff", Col("isPaidTimeOff").Cast("Int"));
+
+/* Set the path to the new location of the curated dataframe */
+var adls_pathsql = "abfss://holidaydatacontainer@" + accountName + ".dfs.core.windows.net/" + prefix + "/Processedsql/";
+
+/* Write new parquet file */
+holidaysql.Write().Mode("Overwrite").Parquet(adls_pathsql);

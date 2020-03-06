@@ -1,0 +1,19 @@
+var prefix = "<your prefix>";
+
+/* Set the path to read the Yellow Cab files */
+var adls_path = "abfss://nyctlc@" + accountName + ".dfs.core.windows.net/" + prefix + "/yellow/";
+
+/* Read the yellow cab into a dataframe */
+var yellowcab = spark.Read().Parquet(adls_path);
+yellowcab.Show();
+yellowcab.PrintSchema();
+
+/* Curate the dataframe with the years that you need and drop some columns that you do not need */
+var yellowcabcurated = yellowcab.Filter(Col("puYear") == "2017" | Col("puYear") == "2018" | Col("puYear") == "2019" );
+yellowcabcurated.PrintSchema();
+
+/* Set the path to the new location of the curated dataframe */
+var adls_pathsql = "abfss://nyctlc@" + accountName + ".dfs.core.windows.net/" + prefix + "/yellowcurated/";
+
+/* Write the new files into a curated folder */
+yellowcabcurated.Write().Mode("Overwrite").Parquet(adls_pathsql);

@@ -1,0 +1,2 @@
+CREATE USER [<AAD USER OR GROUP>] FROM EXTERNAL PROVIDER;
+EXEC sp_addrolemember 'db_owner', '<AAD USER OR GROUP>';

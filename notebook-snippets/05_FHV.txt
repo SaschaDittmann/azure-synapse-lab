@@ -1,0 +1,10 @@
+var prefix = "<your prefix>";
+
+var adls_path = "abfss://nyctlc@" + accountName + ".dfs.core.windows.net/" + prefix + "/fhv/";
+
+var fhv = spark.Read().Parquet(adls_path);
+fhv.Show();
+fhv.PrintSchema();
+
+var fhvcurated = "abfss://nyctlc@" + accountName + ".dfs.core.windows.net/" + prefix + "/fhvcurated/";
+fhv.Write().Mode("Overwrite").Parquet(fhvcurated);

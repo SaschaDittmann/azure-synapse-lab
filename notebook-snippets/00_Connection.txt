@@ -1,0 +1,8 @@
+using static Microsoft.Spark.Sql.Functions;
+
+var accountName = "<storage account name>";
+var accountKey = @"<storage account key>";
+
+/* Create the path towards your data lake storage folder, we assume that you have used the same container and path names in the sink source */
+spark.Conf().Set("fs.azure.account.auth.type." + accountName + ".dfs.core.windows.net", "SharedKey");
+spark.Conf().Set("fs.azure.account.key." + accountName + ".dfs.core.windows.net", accountKey);
